@@ -62,8 +62,11 @@ extends DotConfig
 
 @export_group("Cycling")
 
-## Whether the cycle stays within the viewer's own side when it is restricted.
-@export var cycle_within_team: bool = true
+# There was a `cycle_within_team` here and it is gone rather than implemented, because
+# the behaviour it described is already what happens: dot-spectate builds a cycle out of
+# `targets_for`, which filters by `may_watch`, which is this policy. A second setting
+# that could only ever agree with the first is a setting somebody will one day set to
+# the other value and then spend an afternoon on.
 
 ## Whether a viewer whose side is entirely dead falls back to watching everybody.
 ##
