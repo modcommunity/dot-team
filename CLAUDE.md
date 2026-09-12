@@ -14,7 +14,7 @@ The second idea is about scope. dot-match's team manager is scoped to a match an
 
 ## It absorbed dot-team-spectate
 
-`DotTeamSpectate` and `DotTeamSpectateRules` were their own addon and are now two files here. The merge is recorded in the top-level `tmp.md`.
+`DotTeamSpectate` and `DotTeamSpectateRules` were their own addon and are now two files here. That addon was never pushed; nobody installed it without this one, and it needed nothing this one does not already have.
 
 **The interesting part is what it cost: nothing.** dot-team still installs with dot-core alone, because the spectator manager is duck-typed — no `DotSpectator*` identifier appears anywhere in this addon. Naming one would be worse than a dependency: a script that mentions a `class_name` the project does not have fails to parse and takes every script referencing it down with it, which is the failure mode `DotWeaponLoadoutBridge`'s documentation already describes.
 
