@@ -129,7 +129,10 @@ enum Victim {
 
 ## Pick your side, switch freely, no balancing. A casual server.
 static func casual() -> DotTeamPolicy:
-	var p := DotTeamPolicy.new()
+	# Not this class's own name. A script that names itself in an expression, loaded after
+	# its base, cuts Godot 4.7.2's exit teardown short and leaks every script loaded before
+	# it. See docs/gdscript-hazards.md, "A script that names itself".
+	var p := new()
 	p.auto_assign = true
 	p.allow_switch = true
 	p.switch_cooldown_sec = 5.0
@@ -140,7 +143,7 @@ static func casual() -> DotTeamPolicy:
 
 ## Balanced, cooled down, locked during a round. A competitive server.
 static func competitive() -> DotTeamPolicy:
-	var p := DotTeamPolicy.new()
+	var p := new()
 	p.auto_assign = true
 	p.allow_switch = true
 	p.switch_cooldown_sec = 60.0
@@ -154,7 +157,7 @@ static func competitive() -> DotTeamPolicy:
 
 ## One side, nothing to balance, nothing to switch to.
 static func free_for_all() -> DotTeamPolicy:
-	var p := DotTeamPolicy.new()
+	var p := new()
 	p.auto_assign = true
 	p.initial_team = &"players"
 	p.allow_choice = false
@@ -166,9 +169,9 @@ static func free_for_all() -> DotTeamPolicy:
 
 static func presets() -> Dictionary:
 	return {
-		&"casual": Callable(DotTeamPolicy, "casual"),
-		&"competitive": Callable(DotTeamPolicy, "competitive"),
-		&"free_for_all": Callable(DotTeamPolicy, "free_for_all"),
+		&"casual": casual,
+		&"competitive": competitive,
+		&"free_for_all": free_for_all,
 	}
 
 
@@ -179,4 +182,6 @@ static func preset(p_id: StringName) -> DotTeamPolicy:
 		return null
 
 	var fn: Callable = table[p_id]
-	return fn.call() as DotTeamPolicy
+	# Returned through the declared type rather than cast to this class by name; see the
+	# note on the presets above.
+	return fn.call()

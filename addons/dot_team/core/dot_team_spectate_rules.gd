@@ -107,12 +107,15 @@ func validate() -> DotResult:
 
 ## Dead players see their own side; spectators see everybody; open after the round.
 static func competitive() -> DotTeamSpectateRules:
-	return DotTeamSpectateRules.new()
+	# Not this class's own name. A script that names itself in an expression, loaded after
+	# its base, cuts Godot 4.7.2's exit teardown short and leaks every script loaded before
+	# it. See docs/gdscript-hazards.md, "A script that names itself".
+	return new()
 
 
 ## Everybody sees everybody. A casual server, a practice range, a demo.
 static func open() -> DotTeamSpectateRules:
-	var r := DotTeamSpectateRules.new()
+	var r := new()
 	r.dead_see_enemies = true
 	r.spectators_see_everybody = true
 	r.watch_non_playing = false
@@ -123,7 +126,7 @@ static func open() -> DotTeamSpectateRules:
 ##
 ## For a tournament server where a spectator seat is a seat in the room.
 static func locked() -> DotTeamSpectateRules:
-	var r := DotTeamSpectateRules.new()
+	var r := new()
 	r.spectators_see_everybody = false
 	r.dead_see_enemies = false
 	r.open_after_round = false
@@ -132,9 +135,9 @@ static func locked() -> DotTeamSpectateRules:
 
 static func presets() -> Dictionary:
 	return {
-		&"competitive": Callable(DotTeamSpectateRules, "competitive"),
-		&"open": Callable(DotTeamSpectateRules, "open"),
-		&"locked": Callable(DotTeamSpectateRules, "locked"),
+		&"competitive": competitive,
+		&"open": open,
+		&"locked": locked,
 	}
 
 
@@ -145,4 +148,6 @@ static func preset(p_id: StringName) -> DotTeamSpectateRules:
 		return null
 
 	var fn: Callable = table[p_id]
-	return fn.call() as DotTeamSpectateRules
+	# Returned through the declared type rather than cast to this class by name; see the
+	# note on the presets above.
+	return fn.call()
