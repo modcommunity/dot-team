@@ -80,7 +80,7 @@ func env_prefix() -> String:
 
 
 func cli_prefix() -> String:
-	return "team-spectate-"
+	return "--team-spectate-"
 
 
 func validate() -> DotResult:
