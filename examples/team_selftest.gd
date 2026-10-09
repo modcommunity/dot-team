@@ -11,8 +11,8 @@ extends Node
 ## godot --headless --path . res://examples/team_selftest.tscn
 ## [/codeblock]
 
-const SECTIONS := 8
-const CHECKS := 153
+const SECTIONS := 9
+const CHECKS := 170
 
 const RATE := 64
 
@@ -41,6 +41,7 @@ func _run() -> void:
 	_test_switching()
 	_test_rebalancing()
 	_test_mirror_and_match()
+	_test_rotation()
 
 	_line("")
 	_line("%d sections, %d passed, %d failed" % [_section_count, _passed, _failed])
@@ -663,3 +664,86 @@ func _check(condition: bool, what: String) -> void:
 
 func _line(text: String) -> void:
 	print(text)
+
+
+func _test_rotation() -> void:
+	_section("Who takes a role this round, and why")
+
+	_check(DotTeamRotation.count_for(1, 4.0) == 0, "one player takes no role: there is nobody to play against")
+	_check(DotTeamRotation.count_for(2, 4.0) == 1, "two players, one of each")
+	_check(DotTeamRotation.count_for(9, 4.0) == 3, "one per four, rounded up (9 players, 3)")
+	_check(DotTeamRotation.count_for(30, 4.0, 1, 5) == 5, "and capped (30 players, at most 5)")
+	_check(DotTeamRotation.count_for(3, 1.0) == 2, "and never everybody (3 at one each, 2)")
+
+	var keys: Array[StringName] = [&"a", &"b", &"c", &"d", &"e", &"f"]
+
+	# RANDOM passes over last round's holders while anybody else is left.
+	var history := {}
+	var first: Dictionary = DotTeamRotation.pick(keys, 2, DotTeamRotation.Mode.RANDOM, history, 11)
+	DotTeamRotation.note(history, keys, first["picked"], 1)
+	var second: Dictionary = DotTeamRotation.pick(keys, 2, DotTeamRotation.Mode.RANDOM, history, 12)
+	var repeated := false
+	for k: StringName in second["picked"]:
+		if (first["picked"] as Array).has(k):
+			repeated = true
+	_check(not repeated, "a random draw skips last round's holders (%s, then %s)" % [first["picked"], second["picked"]])
+
+	# Over many seeds every key is drawn first about equally often; an alphabetical "random"
+	# draws one key first every time.
+	var firsts := {}
+	for seed_value in range(200):
+		var f: Dictionary = DotTeamRotation.pick(keys, 1, DotTeamRotation.Mode.RANDOM, {}, seed_value)
+		var k: StringName = (f["picked"] as Array)[0]
+		firsts[k] = int(firsts.get(k, 0)) + 1
+	var fewest := 999
+	for k in keys:
+		fewest = mini(fewest, int(firsts.get(k, 0)))
+	_check(firsts.size() == keys.size() and fewest >= 15, "the draw is spread over everybody (%s in 200)" % firsts)
+
+	var again: Dictionary = DotTeamRotation.pick(keys, 2, DotTeamRotation.Mode.RANDOM, {}, 11)
+	_check(again["picked"] == first["picked"], "and the same seed draws the same people")
+
+	# QUEUE: an equal share over many rounds.
+	var queue := {}
+	for round_number in range(1, 13):
+		var r: Dictionary = DotTeamRotation.pick(keys, 2, DotTeamRotation.Mode.QUEUE, queue, round_number)
+		DotTeamRotation.note(queue, keys, r["picked"], round_number)
+	var lo := 999
+	var hi := -1
+	for k in keys:
+		var t := int((queue[k] as Dictionary)["times"])
+		lo = mini(lo, t)
+		hi = maxi(hi, t)
+	_check(lo == 4 and hi == 4, "a queue gives six players two seats each round an equal share (%d..%d of 12)" % [lo, hi])
+
+	# A newcomer to a queue is not made to wait behind everybody.
+	var late: Array[StringName] = keys.duplicate()
+	late.append(&"g")
+	var with_new: Dictionary = DotTeamRotation.pick(late, 2, DotTeamRotation.Mode.QUEUE, queue, 13)
+	_check((with_new["picked"] as Array).has(&"g"), "and somebody new goes first: nobody has had fewer turns")
+
+	# SWAP: the sides change over.
+	var swap := {}
+	var s1: Dictionary = DotTeamRotation.pick(keys, 3, DotTeamRotation.Mode.SWAP, swap, 5)
+	DotTeamRotation.note(swap, keys, s1["picked"], 1)
+	var s2: Dictionary = DotTeamRotation.pick(keys, 3, DotTeamRotation.Mode.SWAP, swap, 6)
+	var crossed := true
+	for k: StringName in s2["picked"]:
+		if (s1["picked"] as Array).has(k):
+			crossed = false
+	_check(crossed and (s2["picked"] as Array).size() == 3, "a swap puts last round's other side in the role (%s, then %s)" % [s1["picked"], s2["picked"]])
+	_check(str((s2["why"] as Dictionary)[(s2["picked"] as Array)[0]]).contains("other side"), "and says so")
+
+	# Wishes come first, and a refuser only when there is nobody else.
+	var wishes := {&"e": 1, &"a": -1, &"b": -1, &"c": -1, &"d": -1, &"f": -1}
+	var w: Dictionary = DotTeamRotation.pick(keys, 2, DotTeamRotation.Mode.RANDOM, {}, 3, wishes)
+	_check((w["picked"] as Array)[0] == &"e", "a volunteer is picked first")
+	_check(str((w["why"] as Dictionary)[&"e"]) == "asked for it", "and the reason says so")
+	var refuser: StringName = (w["picked"] as Array)[1]
+	_check(str((w["why"] as Dictionary)[refuser]).contains("asked to stay out"),
+		"a refuser is drawn only to fill the round, and told why")
+
+	DotTeamRotation.forget(history, &"a")
+	_check(not history.has(&"a"), "a player who left is forgotten")
+	_check(DotTeamRotation.pick(keys, 9, DotTeamRotation.Mode.QUEUE, {}, 1)["picked"].size() == keys.size(),
+		"asking for more than there are picks everybody, not a crash")

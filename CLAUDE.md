@@ -31,6 +31,7 @@ addons/dot_team/
     dot_team_set.gd            the sides a session has, and four presets
     dot_team_policy.gd         joining, switching, locking, balancing — a DotConfig
     dot_team_balance.gd        all the arithmetic, static and pure
+    dot_team_rotation.gd       who takes a role this round (random, queue, swap), and why
     dot_team_spectate_rules.gd who may watch whom, in rounds and sides
   runtime/
     dot_team_roster.gd         who is on which side, authoritative or mirrored
@@ -78,6 +79,12 @@ The index is the position among the *playing* ids, which is stable because the s
 The policy is installed as dot-spectate's `target_filter`, which runs **after** its own rules. `mp_forcecamera 2` therefore still forbids everything regardless of what is written here, and the suite checks that ordering — the opposite arrangement would look identical in every test that did not specifically try it.
 
 `_push_to_match` translates a side to dot-match's own team **id**, by position in the manager's list. dot-match's `standard_pair()` is `1` and `2` and a spectator team is `31`; passing dot-team's index straight through would assign everybody to teams `0` and `1`, of which only one exists, and half the server would be on a side dot-match refuses to spawn.
+
+## Who takes a role, and the draw that came out alphabetical
+
+`DotTeamRotation` (2026-10-09) is the other half of asymmetric games: not which side somebody joins, but who is the hunter, the activator or the driver this round. It comes from mg-deathrun's `_draw_sides`, the first game to need it. It is static like the balance arithmetic and returns who was picked **and why**, so "why am I hunter again" has an answer. `RANDOM` is a seeded draw that skips last round's holders while anybody else is left, `QUEUE` gives everybody an equal share (smallest share of rounds played first, then whoever had it longest ago), and `SWAP` puts last round's other side in the role. A wish of +1 is first and -1 is last in every mode, so a player who asked to stay out is only picked to fill a round. `count_for` is one per N players, clamped, and never everybody. `note` keeps the history a caller holds.
+
+**The first version's random draw was alphabetical.** It sorted on `hash("%d:%s" % [seed, key])`, and Godot's string hash moves by one when the last character does, so over short keys the order was the keys' own. The suite's two-round check passed anyway ([a, b] then [c, d] skips last round's holders perfectly). The roll is mixed now, and the suite asserts every key is drawn first a fair share of 200 seeds, which fails on the old roll.
 
 ## What this does not do
 

@@ -120,6 +120,18 @@ So the spectator side and the unassigned holding pen both come out as zero, and 
 
 `join_spectators` moves the player **and** starts them watching, because a spectator staring at a black screen is indistinguishable from a crash, and every game that separates the two calls forgets the second one in at least one code path.
 
+## Picking who takes a role each round
+
+In games with one special side (hunters, activators, drivers), `DotTeamRotation` decides who takes it each round and says why. There are three modes: `RANDOM` (a seeded draw that skips last round's picks while anybody else is left), `QUEUE` (everybody gets an equal share of turns) and `SWAP` (last round's other side takes the role). Players who asked for the role go first and players who asked to stay out go last.
+
+```gdscript
+var history := {}   # keep this for the session
+var want := DotTeamRotation.count_for(players.size(), 4.0, 1, 6)   # one per 4 players, 1 to 6
+var result := DotTeamRotation.pick(players, want, DotTeamRotation.Mode.QUEUE, history, round_seed, wishes)
+DotTeamRotation.note(history, players, result["picked"], round_number)
+print(result["why"])   # {"ada": "the fewest turns: 2 of 9 rounds", ...}
+```
+
 ## Why not `DotTeam`
 
 dot-match already has a class by that name, and `class_name` is global in Godot. The names here are the price of the two addons being independently installable, which they are on purpose: a deathmatch needs dot-match's smaller match-scoped notion and nothing else.
