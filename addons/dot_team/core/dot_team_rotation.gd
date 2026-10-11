@@ -54,6 +54,8 @@ static func count_for(total: int, per_player: float, at_least: int = 1, at_most:
 ## rounds they had the role, how many they played, the round they last had it (-1 never) and
 ## whether they had it last round. [param wishes] is key -> +1 (wants it), 0, -1 (wants out).
 ## [param may_repeat] lets [constant RANDOM] draw last round's holders as freely as anybody.
+## [param rest_first] makes [constant RANDOM] rest last round's holders even ahead of their
+## wish (they return only when the round is otherwise short); off, the wish comes first.
 ##
 ## Returns `{"picked": Array[StringName], "why": {key: String}}`, in the order picked.
 static func pick(
@@ -63,7 +65,8 @@ static func pick(
 	history: Dictionary,
 	seed_value: int,
 	wishes: Dictionary = {},
-	may_repeat: bool = false
+	may_repeat: bool = false,
+	rest_first: bool = false
 ) -> Dictionary:
 	var ranked: Array[Dictionary] = []
 
@@ -90,7 +93,13 @@ static func pick(
 
 		match mode:
 			Mode.RANDOM:
-				row["order"] = [row["wish"], 1 if (was and not may_repeat) else 0, row["roll"]]
+				var rested := 1 if (was and not may_repeat) else 0
+				# rest_first: last round's holders sit out even if they volunteered, and come
+				# back only when the round would otherwise be short. A trap course wants this
+				# (an activator who asks every round would never let anybody else press a
+				# button); the default puts the wish first, as the header promises.
+				row["order"] = [rested, row["wish"], row["roll"]] if rest_first \
+					else [row["wish"], rested, row["roll"]]
 			Mode.QUEUE:
 				# Never had it sorts before had it longest ago, which sorts before had it lately.
 				row["order"] = [row["wish"], row["share"], last, row["roll"]]

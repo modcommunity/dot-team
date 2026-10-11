@@ -12,7 +12,7 @@ extends Node
 ## [/codeblock]
 
 const SECTIONS := 9
-const CHECKS := 170
+const CHECKS := 173
 
 const RATE := 64
 
@@ -742,6 +742,17 @@ func _test_rotation() -> void:
 	var refuser: StringName = (w["picked"] as Array)[1]
 	_check(str((w["why"] as Dictionary)[refuser]).contains("asked to stay out"),
 		"a refuser is drawn only to fill the round, and told why")
+
+	# rest_first: last round's holder sits out even though they volunteered again.
+	var rested := {}
+	DotTeamRotation.note(rested, keys, [&"e"] as Array[StringName], 0)
+	var keen := {&"e": 1}
+	var by_wish: Dictionary = DotTeamRotation.pick(keys, 1, DotTeamRotation.Mode.RANDOM, rested, 5, keen)
+	var by_rest: Dictionary = DotTeamRotation.pick(keys, 1, DotTeamRotation.Mode.RANDOM, rested, 5, keen, false, true)
+	_check((by_wish["picked"] as Array)[0] == &"e", "by default a volunteer is drawn again even after a round in the role")
+	_check((by_rest["picked"] as Array)[0] != &"e", "with rest_first, last round's holder rests even though they volunteered")
+	var all_rest: Dictionary = DotTeamRotation.pick([&"e"] as Array[StringName], 1, DotTeamRotation.Mode.RANDOM, rested, 5, keen, false, true)
+	_check((all_rest["picked"] as Array) == [&"e"], "and still comes back when nobody else is left")
 
 	DotTeamRotation.forget(history, &"a")
 	_check(not history.has(&"a"), "a player who left is forgotten")
