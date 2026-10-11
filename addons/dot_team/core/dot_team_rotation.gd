@@ -138,17 +138,17 @@ static func forget(history: Dictionary, key: StringName) -> void:
 	history.erase(key)
 
 
-## A seeded order for one key. Mixed, not just hashed: Godot's string hash moves by one when the
-## last character does, so "11:a" and "11:b" sort next to each other and a "random" draw over
-## short keys comes out alphabetical. The first version did exactly that.
+## A seeded order for one key: dot-core's [DotRandomStream], a child stream named by the
+## key, drawn at index 0.
+##
+## [b]Not a hash of the key, twice over.[/b] Godot's string hash moves by one when the last
+## character does, so "11:a" and "11:b" sorted next to each other and a "random" draw over
+## short keys came out alphabetical (the first version did exactly that); and `hash()` is
+## 32-bit and not promised to be stable across engine versions, so the same seed could
+## draw a different side after an upgrade. The stream hashes names with FNV-1a and mixes
+## with SplitMix64, which is the family's one generator.
 static func _roll(seed_value: int, key: StringName) -> int:
-	var x: int = hash(String(key)) ^ (seed_value * -7046029254386353131)
-	x ^= x >> 33
-	x *= -49064778989728563
-	x ^= x >> 33
-	x *= -4265267296055464877
-	x ^= x >> 33
-	return x
+	return DotRandomStream.new(seed_value, &"team-rotation").stream(key).at(0)
 
 
 static func _before(a: Array, b: Array) -> bool:
