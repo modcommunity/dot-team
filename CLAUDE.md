@@ -25,6 +25,8 @@ Read the family [CLAUDE.md](../../CLAUDE.md) first; this file is only what is sp
 | `core/dot_team_spectate_rules.gd` | `DotTeamSpectateRules`: who may watch whom |
 | `runtime/dot_team_roster.gd` | `DotTeamRoster`: who is on which side, authoritative or mirrored; `bind_match`, `live_fn` |
 | `runtime/dot_team_spectate.gd` | `DotTeamSpectate`: the duck-typed bridge to dot-spectate |
+| `core/dot_team_block_rules.gd`, `core/dot_team_block_config.gd` | `DotTeamBlockRules`: whether two players stop at each other, by relation (`mp_teamblock` 0, `mp_enemyblock` 1), per-player or per-team `!block`/`!noblock` requests, replicated as `mp_blockstate`; `DotTeamBlockConfig` is its layered config |
+| `runtime/dot_team_block_commands.gd` | `DotTeamBlockCommands`: `!block` / `!noblock` on a duck-typed host (DotModule or DotConsole), chat-enabled, gated by `mp_blockcmd` |
 | `dot_team_api.gd` | the API level; bump `LEVEL` for anything new a game can call (rule on dot-core's `DotAddonApi`) |
 | `examples/team_selftest.tscn`, `team_spectate_selftest.tscn` | the two suites |
 
@@ -48,6 +50,7 @@ The family's two steps ([game-dev/CLAUDE.md](../../CLAUDE.md#validating-anything
 - A random draw is mixed, never a raw string hash. [design](docs/design.md#who-takes-a-role-dotteamrotation)
 
 Not here: scoring, spawning, damage, drawing, rounds (`live_fn`), player records. [design](docs/design.md#what-this-does-not-do)
+- Ask `DotTeamBlockRules.blocks(a, b)` whether two players stop at each other; never compare sides in a collision layer. Teammates pass by default, enemies stop, and a player with no side (a free-for-all, a solo game, a spectator) is an enemy, so those stay solid. [design](docs/design.md#players-stop-at-each-other-by-relation)
 
 ## Open
 

@@ -9,5 +9,7 @@ extends RefCounted
 # 1: everything before this file existed (an absent file reads as 1).
 # 2: DotTeamRotation, who takes a role this round.
 # 3: DotTeamRotation.pick(..., rest_first), last round's holders rest even ahead of a wish.
-const LEVEL := 3
+# 4: DotTeamBlockRules / DotTeamBlockConfig / DotTeamBlockCommands (mp_teamblock, mp_enemyblock,
+#    !block, !noblock).
+const LEVEL := 4
 const OLDEST := 1

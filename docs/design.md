@@ -58,6 +58,16 @@ The other half of asymmetric games: not which side somebody joins, but who is th
 
 The random roll is **mixed**, not just hashed: Godot's string hash moves by one when the last character does, so a sort on `hash(seed:key)` over short keys comes out alphabetical ([history](history.md#the-random-draw-was-alphabetical)).
 
+## Players stop at each other by relation
+
+`DotTeamBlockRules` answers one question, `blocks(a, b)`, and moves nothing; dot-player-controller's `DotPlayerBodyRules.pair_fn` is where a game plugs it in, so neither addon names the other.
+
+- **Relations.** Same side for both keys (`side_fn`) is TEAM; everything else is ENEMY: different sides, no side, a spectator, and every pair when fewer than two sides are playing (a free-for-all, a solo game). That last rule is deliberate: calling an FFA's one side "teammates" would turn the default (teammates pass) into walking through every bot, which is what the first play test (2026-10-11) showed is unplayable. `mp_enemyblock` therefore governs FFA and solo play, and stays 1.
+- **Cvars** (ordinary archived, replicated cvars, so `server.cfg` lines and the layered `DotTeamBlockConfig` both work): `mp_teamblock` (0), `mp_enemyblock` (1), `mp_blockcmd` (0 disabled, 1 admins, 2 everyone; 2), `mp_blockcmd_relations` (bitmask 1 teammates, 2 enemies; 1, because passing through an enemy is a gameplay change), `mp_blockscope` (0 the caller's own pairs, 1 the caller's whole team; 0), `mp_blockstate` (the server's record of requests, replicated; never set by hand).
+- **Commands.** `!noblock [team|enemy|all]` asks to pass through, `!block [team|enemy|all|reset]` asks to block, `reset` clears. They are console commands with chat enabled (`DotTeamBlockCommands`), so the permission, rate and audit machinery is the server's. **Passing wins**: where the rule says block, either of two players asking to pass lets them pass; where it says pass, blocking needs both to have asked (one player cannot wall in another).
+- **Replication.** Collision is part of the simulation, so a client must decide the same pair as the server or it rubber-bands. The rules and the requests ride replicated cvars; `mp_blockstate` is one short string (`holder=TE;...`, `-`, `0` or `1` per relation) that a client applies with `follow_cvars`. Apply the rules on every machine that simulates players.
+- **`mp_solidplayers`** stays the master switch: 0 and nobody blocks, whatever this says. At 1, this decides the pair. A game with physics hulls calls `apply_exceptions` (dot-player-controller) on `changed`; a game with an analytic body filters its hull list through `body_rules.blocks`.
+
 ## What this does not do
 
 It does not score, spawn, damage or draw. It does not know what a round is: `live_fn` comes from the game, because a lobby has no rounds and a timer server's "live" means something else. It holds no player records: given dot-player it reads liveness, score and join tick through `alive_fn`, `score_fn` and the like; given nothing it falls back to join order.
