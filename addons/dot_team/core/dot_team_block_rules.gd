@@ -31,8 +31,6 @@ signal changed
 
 enum Relation { TEAM, ENEMY }
 
-const CHANNEL := "team.block"
-
 const CVAR_TEAM := "mp_teamblock"
 const CVAR_ENEMY := "mp_enemyblock"
 const CVAR_CMD := "mp_blockcmd"
