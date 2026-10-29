@@ -1,31 +1,9 @@
 class_name DotTeamBlockRules
 extends RefCounted
 
-## Whether two players stop at each other, decided per pair from their relation: teammates
-## do not block by default, enemies do. The answer a game hands its collision layer
-## (dot-player-controller's `DotPlayerBodyRules.pair_fn`); this file decides, never moves.
-##
-## [codeblock]
-## var rules := DotTeamBlockRules.new()
-## rules.side_fn = func(key): return roster.team_of(str(key))
-## rules.team_set = team_set                      # optional: FFA and spectators are not teams
-## body_rules.pair_fn = rules.blocks              # (a, b) -> bool
-## rules.bind_cvars(add_cvar, FLAG_REPLICATED)    # server: mp_teamblock & co
-## [/codeblock]
-##
-## [b]Relations.[/b] Two players are teammates when [member side_fn] names the same side for
-## both. A key with no side (empty, null) is nobody's teammate, and so is everyone when the
-## set has fewer than two playing sides (a free-for-all or a solo game): they are enemies and
-## block by `mp_enemyblock`, which keeps today's solid bots and players.
-##
-## [b]Commands.[/b] A player may ask to pass through ([method request], `!noblock`) or to
-## block ([code]!block[/code]), per relation. Passing wins: if either of two players asked to
-## pass, they pass. Blocking where the server's rule passes needs both to have asked.
-## [member DotTeamBlockConfig.scope] 1 makes a request the caller's whole team's.
-##
-## [b]Replication.[/b] The requests are one string, [constant CVAR_STATE], a replicated cvar
-## the server writes and a client follows, so a client predicts against the same pairs.
-## Everything is gated by `mp_solidplayers` outside this file: 0 there means nobody blocks.
+## Whether two players stop at each other, per pair; handed to `DotPlayerBodyRules.pair_fn` as
+## `rules.blocks`. Teammates (same [member side_fn] side) pass, enemies and sideless keys block
+## by `mp_enemyblock`; `!noblock`/`!block` requests ([method request]) replicate as [constant CVAR_STATE].
 
 signal changed
 

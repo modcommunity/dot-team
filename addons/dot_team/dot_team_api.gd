@@ -2,14 +2,10 @@ extends RefCounted
 
 ## dot-team's API level. The rule for bumping it is on [DotAddonApi].
 ##
-## LEVEL rises by one for anything a game could call that did not exist before. OLDEST is
-## raised to LEVEL when something a game could have called is removed or changes meaning,
-## because every pack built before that no longer compiles against this addon.
+## LEVEL rises for anything new a game could call; OLDEST rises to LEVEL when a callable
+## is removed or changes meaning.
 
-# 1: everything before this file existed (an absent file reads as 1).
-# 2: DotTeamRotation, who takes a role this round.
-# 3: DotTeamRotation.pick(..., rest_first), last round's holders rest even ahead of a wish.
-# 4: DotTeamBlockRules / DotTeamBlockConfig / DotTeamBlockCommands (mp_teamblock, mp_enemyblock,
-#    !block, !noblock).
+# 1 is everything before this file existed; 2 DotTeamRotation; 3 DotTeamRotation.pick
+# rest_first; 4 DotTeamBlockRules, DotTeamBlockConfig and DotTeamBlockCommands.
 const LEVEL := 4
 const OLDEST := 1

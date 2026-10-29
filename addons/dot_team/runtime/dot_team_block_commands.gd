@@ -1,18 +1,8 @@
 class_name DotTeamBlockCommands
 extends RefCounted
 
-## `!block` and `!noblock`, on a dot-server console and in chat, over [DotTeamBlockRules].
-##
-## [codeblock]
-## var commands := DotTeamBlockCommands.new(rules)
-## commands.install(self)   # a DotModule (add_command) or a DotConsole (command)
-## [/codeblock]
-##
-## Duck-typed like [code]DotVoteCommands[/code]: the host is anything with `add_command` or
-## `command`, a context anything with `reply`, `args`, `session` and `has_permission`, so
-## dot-server, dot-chat and dot-console are optional. Usage: `!noblock [team|enemy|all]`,
-## `!block [team|enemy|all]`, `!block reset` for the server's rule. `all` is the default.
-## Who may, and what they may change, is `mp_blockcmd` and `mp_blockcmd_relations`.
+## `!block`/`!noblock [team|enemy|all]` and `!block reset` over [DotTeamBlockRules]; the host
+## has `add_command` or `command` (duck-typed like `DotVoteCommands`). Who may: `mp_blockcmd`.
 
 const CHANNEL := "team.block.commands"
 const DEFAULTS := {"block": "block", "noblock": "noblock"}
