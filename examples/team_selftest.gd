@@ -11,8 +11,8 @@ extends "team_selftest_base.gd"
 ## godot --headless --path . res://examples/team_selftest.tscn
 ## [/codeblock]
 
-const SECTIONS := 10
-const CHECKS := 196
+const SECTIONS := 11
+const CHECKS := 213
 
 const RATE := 64
 
@@ -40,6 +40,7 @@ func _run() -> void:
 	_test_mirror_and_match()
 	_test_rotation()
 	_test_block()
+	_test_menu_server()
 
 	_line("")
 	_line("%d sections, %d passed, %d failed" % [_section_count, _passed, _failed])
@@ -735,3 +736,69 @@ func _test_rotation() -> void:
 	_check(not history.has(&"a"), "a player who left is forgotten")
 	_check(DotTeamRotation.pick(keys, 9, DotTeamRotation.Mode.QUEUE, {}, 1)["picked"].size() == keys.size(),
 		"asking for more than there are picks everybody, not a crash")
+
+
+func _test_menu_server() -> void:
+	_section("the team menu's server rules")
+
+	var rows: Array = [
+		{"id": 1, "name": "Red", "count": 2, "max": 0},
+		{"id": 2, "name": "Blue", "count": 1, "max": 0},
+		{"id": 3, "name": "Green", "count": 1, "max": 2},
+	]
+	var state := {"team": 1, "spectating": false}
+	var now := [100.0]
+	var joins: Array = []
+	var server := DotTeamMenuServer.new()
+	server.teams_fn = func() -> Array: return rows
+	server.state_fn = func(_k: Variant) -> Dictionary: return state
+	server.clock_fn = func() -> float: return now[0]
+	server.join_fn = func(_k: Variant, id: int, kill: bool) -> DotResult:
+		joins.append([id, kill])
+		state["team"] = id
+		state["spectating"] = false
+		return DotResult.success()
+	server.spectate_fn = func(_k: Variant) -> DotResult:
+		state["spectating"] = true
+		return DotResult.success()
+
+	var data := server.menu_for(7)
+	_check(data["teams"].size() == 3 and not data["ffa"], "three teams make three cards")
+	_check(data["teams"][0]["current"] and not data["teams"][1]["current"], "and the player's own is marked")
+	_check(data["spectate_ok"] and data["enabled"], "spectate is offered by default")
+	_check(data["teams"][0]["closed"] != "", "a card for the team you are on is closed")
+
+	var res := server.request(7, "2")
+	_check(res.ok and state["team"] == 2 and joins[0] == [2, false], "a switch to a team with room goes through, no kill by default")
+	res = server.request(7, "3")
+	_check(not res.ok and res.error.code == DotError.CODE_RATE_LIMITED, "the cooldown refuses the next one")
+	now[0] += 6.0
+	res = server.request(7, "99")
+	_check(not res.ok, "an unknown team is refused")
+	res = server.request(7, "2")
+	_check(not res.ok, "so is the team you are on")
+
+	rows[2]["count"] = 2
+	_check(not server.request(7, "3").ok, "a team at its own cap is full")
+	rows[2]["count"] = 1
+	rows[0]["count"] = 5
+	server._cvars["mp_teamswitch_imbalance"] = null
+	_check(not server.request(7, "1").ok, "the imbalance limit refuses a team already well ahead")
+	rows[0]["count"] = 2
+
+	res = server.request(7, "spectate")
+	_check(res.ok and state["spectating"], "spectate is a choice like any other")
+	_check(server.menu_for(7)["spectating"] and not server.menu_for(7)["teams"][1]["current"], "and the menu shows it")
+	now[0] += 6.0
+	res = server.request(7, "auto")
+	_check(res.ok and state["team"] in [2, 3] and not state["spectating"], "auto joins one of the smallest teams")
+
+	rows.clear()
+	state["team"] = -1
+	state["spectating"] = false
+	data = server.menu_for(7)
+	_check(data["ffa"] and data["teams"].is_empty() and data["spectate_ok"], "with no teams it is a free-for-all and still offers spectate")
+	now[0] += 6.0
+	_check(not server.request(7, "play").ok, "play while playing is refused")
+	_check(server.request(7, "spectate").ok, "spectate works in a free-for-all")
+	_check(server.value("mp_teamswitch_cooldown") == 5.0 and server.value("mp_teamswitch_imbalance") == 1.0, "the cvars have their defaults before any is bound")

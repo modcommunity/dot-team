@@ -71,3 +71,7 @@ The random roll is **mixed**, not just hashed: Godot's string hash moves by one 
 ## What this does not do
 
 It does not score, spawn, damage or draw. It does not know what a round is: `live_fn` comes from the game, because a lobby has no rounds and a timer server's "live" means something else. It holds no player records: given dot-player it reads liveness, score and join tick through `alive_fn`, `score_fn` and the like; given nothing it falls back to join order.
+
+## The team menu is rules on the server and cards on the client
+
+`DotTeamMenuServer` holds every rule of a voluntary switch (enabled, cooldown, imbalance, per-team and global cap, anytime or only between rounds, kill on switch, spectate offered) as `mp_teamswitch_*` cvars read per request, so an admin changes them live. It never touches a game's team storage: the game passes callables, so the same rules serve a game that keeps teams in `DotTeamManager` and one that keeps them in `DotTeamRoster`. The reply rides the existing notice channel as a `team_menu` notice, because the wire kinds are append-only. A free-for-all is a menu with no team rows, which leaves Play and Spectate. Names, colours and N teams are the game's config, not this class's.

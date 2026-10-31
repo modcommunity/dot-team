@@ -6,6 +6,6 @@ extends RefCounted
 ## is removed or changes meaning.
 
 # 1 is everything before this file existed; 2 DotTeamRotation; 3 DotTeamRotation.pick
-# rest_first; 4 DotTeamBlockRules, DotTeamBlockConfig and DotTeamBlockCommands.
-const LEVEL := 4
+# rest_first; 4 DotTeamBlockRules, DotTeamBlockConfig and DotTeamBlockCommands; 5 DotTeamMenuServer.
+const LEVEL := 5
 const OLDEST := 1

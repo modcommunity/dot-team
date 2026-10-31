@@ -27,6 +27,7 @@ Read the family [CLAUDE.md](../../CLAUDE.md) first; this file is only what is sp
 | `runtime/dot_team_spectate.gd` | `DotTeamSpectate`: the duck-typed bridge to dot-spectate |
 | `core/dot_team_block_rules.gd`, `core/dot_team_block_config.gd` | `DotTeamBlockRules`: whether two players stop at each other, by relation (`mp_teamblock` 0, `mp_enemyblock` 1), per-player or per-team `!block`/`!noblock` requests, replicated as `mp_blockstate`; `DotTeamBlockConfig` is its layered config |
 | `runtime/dot_team_block_commands.gd` | `DotTeamBlockCommands`: `!block` / `!noblock` on a duck-typed host (DotModule or DotConsole), chat-enabled, gated by `mp_blockcmd` |
+| `runtime/dot_team_menu_server.gd` | `DotTeamMenuServer`: the server half of the team menu (period key). Answers the `teams` command with a `team_menu` notice and validates `teams <id\|auto\|spectate\|play>` against `mp_teamswitch_enabled`, `_cooldown`, `_imbalance`, `_maxplayers`, `_anytime`, `_kill`, `_spectate`. The game supplies `teams_fn`, `state_fn`, `join_fn`, `spectate_fn`, `play_fn`, `window_fn`; it never knows how the game keeps teams |
 | `dot_team_api.gd` | the API level; bump `LEVEL` for anything new a game can call (rule on dot-core's `DotAddonApi`) |
 | `examples/team_selftest.tscn`, `team_spectate_selftest.tscn` | the two suites |
 
