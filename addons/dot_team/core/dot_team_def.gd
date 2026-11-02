@@ -43,7 +43,7 @@ extends Resource
 @export var friendly_fire: bool = false
 
 ## How many may be on this side. Zero is unlimited.
-@export_range(0, 1024, 1) var max_players: int = 0
+@export_range(0, 1024, 1, "or_greater") var max_players: int = 0
 
 ## Sites on this side, for dot-spawn. Empty means the side's own id is used.
 @export var spawn_group: StringName = &""
