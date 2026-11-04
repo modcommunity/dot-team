@@ -550,6 +550,7 @@ func _test_duck_typing() -> void:
 	teams.queue_free()
 	s.queue_free()
 	bare.queue_free()
+	stub.free()
 
 
 # --- Harness ---------------------------------------------------------------
