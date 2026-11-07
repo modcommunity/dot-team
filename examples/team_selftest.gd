@@ -255,6 +255,10 @@ func _test_balance_maths() -> void:
 		"a count missing a side terminates rather than spinning until the guard trips"
 	)
 
+	_test_victim_selection()
+
+
+func _test_victim_selection() -> void:
 	# Victim selection.
 	var candidates: Array[Dictionary] = [
 		{"key": "old", "joined_tick": 10, "score": 90.0, "alive": false},
