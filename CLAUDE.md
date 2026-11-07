@@ -35,7 +35,7 @@ Paths except `examples/` are in `addons/dot_team/`.
 
 ## Running and testing
 
-The family's two steps ([game-dev/CLAUDE.md](../../CLAUDE.md#validating-anything)), then **both** `godot --headless --path . res://examples/team_selftest.tscn` and `res://examples/team_spectate_selftest.tscn`. The second needs dot-spectate linked at `addons/dot_spectate`.
+The family's two steps ([family CLAUDE.md](../../CLAUDE.md#validating-anything)), then **both** `godot --headless --path . res://examples/team_selftest.tscn` and `res://examples/team_spectate_selftest.tscn`. The second needs dot-spectate linked at `addons/dot_spectate`.
 
 ## Rules that bite
 
