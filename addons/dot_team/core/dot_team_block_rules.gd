@@ -37,15 +37,20 @@ func relation(a: Variant, b: Variant) -> int:
 	if side_a == "" or side_b == "" or side_a != side_b:
 		return Relation.ENEMY
 	if team_set != null:
-		if team_set.playing_teams().size() < 2 or not team_set.is_playing(StringName(side_a)):
+		if not _two_playing() or not team_set.is_playing(StringName(side_a)):
 			return Relation.ENEMY
 	return Relation.TEAM
 
 
 ## Whether [param a] and [param b] stop at each other.
+## Asked for every near pair on every tick (the movement body's hull gather): with no requests held it skips the override lookups (both would be -1, the base).
 func blocks(a: Variant, b: Variant) -> bool:
+	if _overrides.is_empty() and config.team_block == config.enemy_block:
+		return config.team_block
 	var rel := relation(a, b)
 	var base := config.team_block if rel == Relation.TEAM else config.enemy_block
+	if _overrides.is_empty():
+		return base
 	var from_a := _override(a, rel)
 	var from_b := _override(b, rel)
 	if base:
@@ -233,6 +238,17 @@ func _side(key: Variant) -> String:
 		return ""
 	var side: Variant = side_fn.call(key)
 	return "" if side == null else str(side)
+
+
+## Whether [member team_set] has at least two playing sides; [method DotTeamSet.playing_teams] without its array.
+func _two_playing() -> bool:
+	var n := 0
+	for t: DotTeamDef in team_set.teams:
+		if t != null and t.playing:
+			n += 1
+			if n >= 2:
+				return true
+	return false
 
 
 func _holder(key: Variant) -> String:
