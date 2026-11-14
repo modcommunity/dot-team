@@ -96,6 +96,10 @@ static func moves_to_balance(
 	var out: Array[Dictionary] = []
 	var working := counts.duplicate()
 	var guard := 0
+	# One move per person at most closes any real spread; 256 was a fixed cut-off a server with more players than that would hit.
+	var guard_limit := 256
+	for team_count: Variant in counts.values():
+		guard_limit += int(team_count)
 
 	while not balanced(working, order, max_difference):
 		var from := largest(working, order)
@@ -119,7 +123,7 @@ static func moves_to_balance(
 		# The guard is a real safety net rather than a formality: `counts` comes from a
 		# caller, and a caller that passes a side not in `order` produces a spread that
 		# never closes.
-		if guard > 256:
+		if guard > guard_limit:
 			break
 
 	return out

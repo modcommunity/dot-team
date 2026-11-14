@@ -45,7 +45,7 @@ extends DotConfig
 ##
 ## One is the usual answer. Zero means "exactly equal", which cannot be satisfied with
 ## an odd number of players and is therefore refused by [method validate].
-@export_range(0, 64, 1) var max_difference: int = 1
+@export_range(0, 64, 1, "or_greater") var max_difference: int = 1
 
 ## Whether the roster moves people to keep the sides even.
 ##
@@ -163,7 +163,7 @@ static func free_for_all() -> DotTeamPolicy:
 	p.allow_choice = false
 	p.allow_switch = false
 	p.autobalance = false
-	p.max_difference = 64
+	p.max_difference = 1 << 20  # no limit worth the name
 	return p
 
 

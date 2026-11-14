@@ -12,7 +12,7 @@ extends "team_selftest_base.gd"
 ## [/codeblock]
 
 const SECTIONS := 11
-const CHECKS := 213
+const CHECKS := 214
 
 const RATE := 64
 
@@ -242,6 +242,8 @@ func _test_balance_maths() -> void:
 		plan[0]["from"] == &"blue" and plan[0]["to"] == &"red",
 		"from the big side to the small one"
 	)
+	var big := DotTeamBalance.moves_to_balance({"blue": 1000, "red": 0}, order, 1)
+	_check(big.size() == 500, "a thousand against none is five hundred moves, not cut at 256")
 	_check(
 		DotTeamBalance.moves_to_balance({"blue": 3, "red": 3}, order, 1).is_empty(),
 		"and an even session needs none, which is the common case"
