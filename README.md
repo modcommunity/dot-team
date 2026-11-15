@@ -3,7 +3,7 @@ The side a player is on, held for the whole session, in one place every other ad
 ## Install
 
 1. Get [Godot 4.7](https://godotengine.org/download).
-2. Either use [dot-bootstrap](https://github.com/modcommunity/dot-bootstrap), which clones every project and links the addons, or copy `addons/dot_team/` and [dot-core](https://github.com/modcommunity/dot-core)'s `addons/dot_core/` into your project and enable both in *Project > Project Settings > Plugins*.
+2. Either use [dot-bootstrap](https://github.com/gamespice-platform/bootstrap), which clones every project and links the addons, or copy `addons/dot_team/` and [dot-core](https://github.com/gamespice-platform/core)'s `addons/dot_core/` into your project and enable both in *Project > Project Settings > Plugins*.
 
 dot-core is the only dependency.
 
@@ -60,7 +60,7 @@ dot-team is the authority and dot-match is told, through duck typing (`assign(ke
 
 ## Spectating by side
 
-`DotTeamSpectate` maps dot-team's named sides to [dot-spectate](https://github.com/modcommunity/dot-spectate)'s numbered ones and holds the watch policy. dot-spectate is not a dependency: the manager is duck-typed and built automatically if the class exists.
+`DotTeamSpectate` maps dot-team's named sides to [dot-spectate](https://github.com/gamespice-platform/spectate)'s numbered ones and holds the watch policy. dot-spectate is not a dependency: the manager is duck-typed and built automatically if the class exists.
 
 ```gdscript
 var spectate := DotTeamSpectate.new()
@@ -113,6 +113,6 @@ Import the project once, then run the self-test scene in `examples/` headless wi
 
 ## Status and licence
 
-Part of the TMC **dot-\*** family of Godot addons. Written with Claude Code and maintained by `gamemann`. Every addon has headless tests, but little of this has been played by real users yet, so expect rough edges and please [open an issue](https://github.com/modcommunity/dot-team/issues) when you hit one.
+Part of the TMC **dot-\*** family of Godot addons. Written with Claude Code and maintained by `gamemann`. Every addon has headless tests, but little of this has been played by real users yet, so expect rough edges and please [open an issue](https://github.com/gamespice-platform/team/issues) when you hit one.
 
 MIT licence, see [LICENSE](LICENSE). The only closed part of the TMC platform is the web back end; you can use your own instead of TMC's.
