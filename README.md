@@ -25,6 +25,7 @@ if teams.are_enemies(shooter, victim):
     apply_damage()
 ```
 
+- `DotTeamSet.palette_colour(i)` and `palette_name(i)` give team `i` (0 is the first) a colour and a name for any number of teams: Red, Blue, Green, Yellow, Violet, Orange, then "Team 7" and on with golden-ratio hues. A game that numbers its teams uses these instead of a table of its own.
 - `standard_pair()` has four entries: blue, red, unassigned and spectator. "Connected but not chosen yet" needs a real id, or it ends up as an empty string that matches nothing or everything.
 - Free-for-all is one team with friendly fire on, not "no teams".
 - `are_enemies` is the one answer other addons ask. A spectator is nobody's enemy.

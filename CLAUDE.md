@@ -18,7 +18,7 @@ Read the family [CLAUDE.md](../../CLAUDE.md) first; this file is only what is sp
 | Path | What |
 | --- | --- |
 | `core/dot_team_def.gd` | `DotTeamDef`: one side; colour, friendly fire, cap, `playing`, `attributes` |
-| `core/dot_team_set.gd` | `DotTeamSet`: the sides a session has, presets (`standard_pair()`), `are_enemies` |
+| `core/dot_team_set.gd` | `DotTeamSet`: the sides a session has, presets (`standard_pair()`), `are_enemies`, the shared `palette_colour` / `palette_name` for numbered teams |
 | `core/dot_team_policy.gd` | `DotTeamPolicy`: joining, switching, locking, balancing; a `DotConfig` with `validate()` |
 | `core/dot_team_balance.gd` | `DotTeamBalance`: all the arithmetic, static and pure |
 | `core/dot_team_rotation.gd` | `DotTeamRotation`: who takes a role this round (`RANDOM`, `QUEUE`, `SWAP`), and why |

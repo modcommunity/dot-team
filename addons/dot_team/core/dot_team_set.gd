@@ -222,6 +222,46 @@ static func attack_defend(
 	return set
 
 
+## The first sides' colours, in team order, for a game that numbers its teams (team 1 is index 0).
+const PALETTE_COLOURS: Array[Color] = [
+	Color(0.85, 0.27, 0.26),
+	Color(0.29, 0.53, 0.86),
+	Color(0.35, 0.72, 0.38),
+	Color(0.92, 0.78, 0.22),
+	Color(0.66, 0.42, 0.82),
+	Color(0.91, 0.55, 0.20),
+]
+
+## The first sides' names, beside [constant PALETTE_COLOURS].
+const PALETTE_NAMES: Array[String] = [
+	"Red", "Blue", "Green", "Yellow", "Violet", "Orange",
+]
+
+## The colour a negative index (no team) gets from [method palette_colour].
+const PALETTE_NOBODY := Color(0.7, 0.7, 0.72)
+
+
+## Team [param index]'s colour (0 is the first team): the palette's six, then as many more as a
+## server plays with, spread round the hue circle by the golden ratio so neighbours differ. There
+## is no last team: any index has a colour. Below 0 is nobody's grey.
+static func palette_colour(index: int) -> Color:
+	if index < 0:
+		return PALETTE_NOBODY
+	if index < PALETTE_COLOURS.size():
+		return PALETTE_COLOURS[index]
+	return Color.from_hsv(fposmod(0.11 + float(index) * 0.618034, 1.0), 0.62, 0.86)
+
+
+## Team [param index]'s name (0 is the first team): the palette's, then "Team 7", "Team 8" and
+## on, for any index. Below 0 is "Nobody".
+static func palette_name(index: int) -> String:
+	if index < 0:
+		return "Nobody"
+	if index < PALETTE_NAMES.size():
+		return PALETTE_NAMES[index]
+	return "Team %d" % (index + 1)
+
+
 ## Four sides, for a squad mode or a large objective map.
 static func four_way() -> DotTeamSet:
 	var set := DotTeamSet.new()

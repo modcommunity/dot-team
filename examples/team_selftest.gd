@@ -12,7 +12,7 @@ extends "team_selftest_base.gd"
 ## [/codeblock]
 
 const SECTIONS := 11
-const CHECKS := 214
+const CHECKS := 218
 
 const RATE := 64
 
@@ -111,6 +111,14 @@ func _test_sets() -> void:
 
 	var pair := DotTeamSet.standard_pair()
 	_check(pair.build().ok, "the standard pair builds")
+	_check(DotTeamSet.palette_name(0) == "Red" and DotTeamSet.palette_colour(0) == DotTeamSet.PALETTE_COLOURS[0],
+		"the palette's first team is red")
+	_check(DotTeamSet.palette_name(6) == "Team 7" and DotTeamSet.palette_name(99) == "Team 100",
+		"past six teams the names are made, for any count")
+	_check(DotTeamSet.palette_colour(6) != DotTeamSet.palette_colour(5)
+		and DotTeamSet.palette_colour(7) != DotTeamSet.palette_colour(6), "and so are the colours, each its own")
+	_check(DotTeamSet.palette_name(-1) == "Nobody" and DotTeamSet.palette_colour(-1) == DotTeamSet.PALETTE_NOBODY,
+		"no team is nobody, in grey")
 	_check(
 		pair.teams.size() == 4,
 		"with four entries, not two — a player who has connected and not chosen is "
