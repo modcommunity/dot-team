@@ -1,3 +1,5 @@
+[![dot-team - GameSpice addon](docs/banner.png)](https://moddingcommunity.com/a/244-dot-team)
+
 The side a player is on, held for the whole session, in one place every other addon reads it from. It also holds the spectating policy that sits on top: who may watch which side.
 
 ## Install
