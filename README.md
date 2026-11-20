@@ -1,4 +1,4 @@
-[![dot-team - GameSpice addon](docs/banner.png)](https://moddingcommunity.com/a/244-dot-team)
+[![Team - GameSpice addon](docs/banner.png)](https://moddingcommunity.com/a/244-dot-team)
 
 The side a player is on, held for the whole session, in one place every other addon reads it from. It also holds the spectating policy that sits on top: who may watch which side.
 
@@ -52,7 +52,7 @@ DotTeamBalance.explain(&"blue", &"red", "ada", 6)
 
 Who gets moved is a policy: `newest` (default, since the newest player has least invested in a side), `lowest_score`, `random` or `oldest`. Nobody alive is moved unless the server says so.
 
-## With dot-match
+## With Match
 
 ```gdscript
 teams.bind_match(match_node.teams)
