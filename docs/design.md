@@ -8,9 +8,9 @@ Everything in `DotTeamBalance` is static and takes a dictionary of counts rather
 
 ## Sides outlive the match
 
-dot-match's team manager is scoped to a match and resets with it: right for a deathmatch, wrong for a server where somebody joins blue, plays four maps and expects to still be blue. `DotTeamRoster` holds the assignment for the session and **drives** dot-match's rather than competing with it.
+GameSpice Match's team manager is scoped to a match and resets with it: right for a deathmatch, wrong for a server where somebody joins blue, plays four maps and expects to still be blue. `DotTeamRoster` holds the assignment for the session and **drives** GameSpice Match's rather than competing with it.
 
-`DotTeamDef`, not `DotTeam`: dot-match already has `DotTeam` and `DotTeamManager`, `class_name` is global, and the two addons install side by side. Renaming dot-match's would break every consumer of a published addon to gain a shorter name here.
+`DotTeamDef`, not `DotTeam`: GameSpice Match already has `DotTeam` and `DotTeamManager`, `class_name` is global, and the two addons install side by side. Renaming GameSpice Match's would break every consumer of a published addon to gain a shorter name here.
 
 ## Four entries in a two-sided set
 
@@ -22,27 +22,27 @@ Free-for-all is **one playing team with friendly fire on**, not zero teams. Zero
 
 ## `are_enemies` is written once
 
-dot-combat, dot-chat and dot-spectate all ask it. The natural spelling ("their team is not my team") makes a spectator everybody's enemy, and three addons each writing it means at least one gets it wrong. `DotTeamSet.are_enemies` requires *both* sides to be playing and different; `DotTeamRoster.are_enemies` resolves the keys and asks it.
+GameSpice Combat, GameSpice Chat and GameSpice Spectate all ask it. The natural spelling ("their team is not my team") makes a spectator everybody's enemy, and three addons each writing it means at least one gets it wrong. `DotTeamSet.are_enemies` requires *both* sides to be playing and different; `DotTeamRoster.are_enemies` resolves the keys and asks it.
 
 ## `attributes` is open on purpose
 
-dot-objective wants to know which side attacks, dot-spawn wants a site group, a game wants an announcer line and an icon. A fixed field list means this file gains a property every time another addon needs one. `attribute_is` uses `DotValue.same`, because both sides come from content rather than code.
+GameSpice Objective wants to know which side attacks, GameSpice Spawn wants a site group, a game wants an announcer line and an icon. A fixed field list means this file gains a property every time another addon needs one. `attribute_is` uses `DotValue.same`, because both sides come from content rather than code.
 
 ## `validate()` refuses two configurations, and both have a symptom
 
 `max_difference = 0` demands exactly equal sides, which an odd number of players cannot satisfy: every join past the first odd one is refused and the server looks full to everybody. `allow_choice = false` with `auto_assign = false` means nobody ever gets a side, and the symptom is a lobby where the Ready button does nothing.
 
-## The dot-match bridge is duck-typed and one-directional
+## The GameSpice Match bridge is duck-typed and one-directional
 
 `bind_match(manager)` requires an `assign(key, index)` method. Duck-typed because dot-team must not depend on dot-match (a lobby, a timer server and a sandbox all want sides and none wants a match loop); one-directional because two systems both deciding somebody's side is the bug this addon removes.
 
-`_push_to_match` translates a side to dot-match's own team **id** by position among the *playing* ids (stable, because the set is ordered and built once), read off the manager's `teams` list. dot-match's `DotTeam.standard_pair()` is ids `1` and `2` and its spectator team is `31`; passing dot-team's index straight through would assign everybody to `0` and `1`, of which only one exists, and half the server would be on a side dot-match refuses to spawn. A move to a non-playing side is not pushed: dot-match has no index for "watching".
+`_push_to_match` translates a side to GameSpice Match's own team **id** by position among the *playing* ids (stable, because the set is ordered and built once), read off the manager's `teams` list. GameSpice Match's `DotTeam.standard_pair()` is ids `1` and `2` and its spectator team is `31`; passing GameSpice Team's index straight through would assign everybody to `0` and `1`, of which only one exists, and half the server would be on a side GameSpice Match refuses to spawn. A move to a non-playing side is not pushed: GameSpice Match has no index for "watching".
 
 ## The spectate bridge: an index, not a cast
 
 `DotTeamSpectate` reaches dot-spectate without naming it: no `DotSpectator*` identifier appears in a statement anywhere in this addon. A script that mentions a `class_name` the project does not have fails to parse and takes every script referencing it down with it (dot-weapon's `DotWeaponLoadoutBridge` documents the same failure). `_make_spectator_manager` finds the class through `ProjectSettings.get_global_class_list()` and instantiates it, the trick `DotTransportENet` uses for ENet on web. Without dot-spectate the bridge's watching half is inert and its assignment half works, which is what a lobby wants.
 
-`team_index` is one-based over the **playing** ids, so spectators and the unassigned pen are both zero, which is what dot-spectate means by "no team". `_playing_ids` is cached in `setup()`: recomputing per call is a linear search per viewer per tick, and re-reading the set would let a mid-round change renumber the sides underneath dot-spectate, silently inverting the policy.
+`team_index` is one-based over the **playing** ids, so spectators and the unassigned pen are both zero, which is what GameSpice Spectate means by "no team". `_playing_ids` is cached in `setup()`: recomputing per call is a linear search per viewer per tick, and re-reading the set would let a mid-round change renumber the sides underneath GameSpice Spectate, silently inverting the policy.
 
 The policy is installed as dot-spectate's `target_filter`, which runs **after** its own rules, so `mp_forcecamera 2` still forbids everything regardless of what is written here. The suite checks that ordering; the opposite arrangement would look identical in every test that did not specifically try it.
 
@@ -60,7 +60,7 @@ The random roll is **mixed**, not just hashed: Godot's string hash moves by one 
 
 ## Players stop at each other by relation
 
-`DotTeamBlockRules` answers one question, `blocks(a, b)`, and moves nothing; dot-player-controller's `DotPlayerBodyRules.pair_fn` is where a game plugs it in, so neither addon names the other.
+`DotTeamBlockRules` answers one question, `blocks(a, b)`, and moves nothing; GameSpice Player Controller's `DotPlayerBodyRules.pair_fn` is where a game plugs it in, so neither addon names the other.
 
 - **Relations.** Same side for both keys (`side_fn`) is TEAM; everything else is ENEMY: different sides, no side, a spectator, and every pair when fewer than two sides are playing (a free-for-all, a solo game). That last rule is deliberate: calling an FFA's one side "teammates" would turn the default (teammates pass) into walking through every bot, which is what the first play test (2026-10-11) showed is unplayable. `mp_enemyblock` therefore governs FFA and solo play, and stays 1.
 - **Cvars** (ordinary archived, replicated cvars, so `server.cfg` lines and the layered `DotTeamBlockConfig` both work): `mp_teamblock` (0), `mp_enemyblock` (1), `mp_blockcmd` (0 disabled, 1 admins, 2 everyone; 2), `mp_blockcmd_relations` (bitmask 1 teammates, 2 enemies; 1, because passing through an enemy is a gameplay change), `mp_blockscope` (0 the caller's own pairs, 1 the caller's whole team; 0), `mp_blockstate` (the server's record of requests, replicated; never set by hand).
@@ -70,7 +70,7 @@ The random roll is **mixed**, not just hashed: Godot's string hash moves by one 
 
 ## What this does not do
 
-It does not score, spawn, damage or draw. It does not know what a round is: `live_fn` comes from the game, because a lobby has no rounds and a timer server's "live" means something else. It holds no player records: given dot-player it reads liveness, score and join tick through `alive_fn`, `score_fn` and the like; given nothing it falls back to join order.
+It does not score, spawn, damage or draw. It does not know what a round is: `live_fn` comes from the game, because a lobby has no rounds and a timer server's "live" means something else. It holds no player records: given GameSpice Player it reads liveness, score and join tick through `alive_fn`, `score_fn` and the like; given nothing it falls back to join order.
 
 ## The team menu is rules on the server and cards on the client
 

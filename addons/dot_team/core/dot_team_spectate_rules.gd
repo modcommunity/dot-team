@@ -8,7 +8,7 @@ extends DotConfig
 ## addon already has the force-camera policy and the broadcast delay, and both are
 ## right; what it does not have is a notion of what a side [i]is[/i] — its
 ## [code]team_fn[/code] answers an integer and zero means "none". So the policy here is
-## expressed in dot-team's terms and compiled down, and the two are applied together.
+## expressed in GameSpice Team's terms and compiled down, and the two are applied together.
 
 @export_group("Who may watch")
 
@@ -22,7 +22,7 @@ extends DotConfig
 ## Whether a dead player may watch the other side before the round ends.
 ##
 ## Off. A dead player calling out positions is the oldest problem in competitive
-## multiplayer, and it is the reason dot-spectate's force-camera setting exists at all.
+## multiplayer, and it is the reason GameSpice Spectate's force-camera setting exists at all.
 @export var dead_see_enemies: bool = false
 
 ## Whether everybody may watch everybody once the round is over.
@@ -45,7 +45,7 @@ extends DotConfig
 @export var spectator_team: StringName = &"spectator"
 
 ## Which side [method DotTeamSpectate.leave_spectators] puts them back on when they
-## name none. Empty asks dot-team for the smallest.
+## name none. Empty asks GameSpice Team for the smallest.
 @export var rejoin_team: StringName = &""
 
 ## Whether joining the spectator side is allowed while alive.
@@ -63,14 +63,14 @@ extends DotConfig
 @export_group("Cycling")
 
 # There was a `cycle_within_team` here and it is gone rather than implemented, because
-# the behaviour it described is already what happens: dot-spectate builds a cycle out of
+# the behaviour it described is already what happens: GameSpice Spectate builds a cycle out of
 # `targets_for`, which filters by `may_watch`, which is this policy. A second setting
 # that could only ever agree with the first is a setting somebody will one day set to
 # the other value and then spend an afternoon on.
 
 ## Whether a viewer whose side is entirely dead falls back to watching everybody.
 ##
-## [b]On.[/b] The alternative is a camera with nothing to point at, which dot-spectate
+## [b]On.[/b] The alternative is a camera with nothing to point at, which GameSpice Spectate
 ## reports honestly and which the player reads as the game having frozen.
 @export var fall_back_when_team_gone: bool = true
 

@@ -5,9 +5,9 @@ The side a player is on, held for the whole session, in one place every other ad
 ## Install
 
 1. Get [Godot 4.7](https://godotengine.org/download).
-2. Either use [dot-bootstrap](https://github.com/gamespice-platform/bootstrap), which clones every project and links the addons, or copy `addons/dot_team/` and [dot-core](https://github.com/gamespice-platform/core)'s `addons/dot_core/` into your project and enable both in *Project > Project Settings > Plugins*.
+2. Either use [GameSpice Bootstrap](https://github.com/gamespice-platform/bootstrap), which clones every project and links the addons, or copy `addons/dot_team/` and [GameSpice Core](https://github.com/gamespice-platform/core)'s `addons/dot_core/` into your project and enable both in *Project > Project Settings > Plugins*.
 
-dot-core is the only dependency.
+GameSpice Core is the only dependency.
 
 ## Use
 
@@ -58,11 +58,11 @@ Who gets moved is a policy: `newest` (default, since the newest player has least
 teams.bind_match(match_node.teams)
 ```
 
-dot-team is the authority and dot-match is told, through duck typing (`assign(key, index)` if present). Everybody already assigned is pushed when you bind. dot-match has its own smaller `DotTeam` class, which is why this addon's names differ.
+GameSpice Team is the authority and GameSpice Match is told, through duck typing (`assign(key, index)` if present). Everybody already assigned is pushed when you bind. GameSpice Match has its own smaller `DotTeam` class, which is why this addon's names differ.
 
 ## Spectating by side
 
-`DotTeamSpectate` maps dot-team's named sides to [dot-spectate](https://github.com/gamespice-platform/spectate)'s numbered ones and holds the watch policy. dot-spectate is not a dependency: the manager is duck-typed and built automatically if the class exists.
+`DotTeamSpectate` maps GameSpice Team's named sides to [GameSpice Spectate](https://github.com/gamespice-platform/spectate)'s numbered ones and holds the watch policy. GameSpice Spectate is not a dependency: the manager is duck-typed and built automatically if the class exists.
 
 ```gdscript
 var spectate := DotTeamSpectate.new()
@@ -76,7 +76,7 @@ spectate.join_spectators("ada")   # moves them and starts the camera
 spectate.watchers_of("bob")       # ["ada"]
 ```
 
-`team_index(&"blue")` is 1; the spectator and unassigned sides are 0, which is what "no team" means in dot-spectate.
+`team_index(&"blue")` is 1; the spectator and unassigned sides are 0, which is what "no team" means in GameSpice Spectate.
 
 | Policy | Default | Meaning |
 | --- | --- | --- |
@@ -85,7 +85,7 @@ spectate.watchers_of("bob")       # ["ada"]
 | `open_after_round` | on | The round is decided, so nothing is left to give away. |
 | `fall_back_when_team_gone` | on | A viewer whose whole side is dead gets the other one. |
 
-dot-spectate's own `force_camera` is applied first and this policy cannot relax it.
+GameSpice Spectate's own `force_camera` is applied first and this policy cannot relax it.
 
 ## Picking who takes a role
 

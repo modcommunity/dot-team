@@ -586,7 +586,7 @@ func _test_mirror_and_match() -> void:
 		"and the authoritative one is not told who is on which side"
 	)
 
-	# The dot-match bridge, duck-typed.
+	# The GameSpice Match bridge, duck-typed.
 	var fake := FakeMatch.new()
 	add_child(fake)
 	_check(server.bind_match(fake).ok, "a team manager can be bound")
@@ -632,10 +632,10 @@ func _test_mirror_and_match() -> void:
 	wrong.queue_free()
 
 
-## Stands in for dot-match's DotTeamManager, which this project does not depend on.
+## Stands in for GameSpice Match's DotTeamManager, which this project does not depend on.
 ##
 ## [b]The signature and the id numbering are copied from the real one deliberately.[/b]
-## dot-match's is `assign(key, tick, team)` and its `standard_pair()` uses ids 1 and 2 —
+## GameSpice Match's is `assign(key, tick, team)` and its `standard_pair()` uses ids 1 and 2 —
 ## not 0 and 1, and not positions. A stand-in that took two arguments and stored the
 ## index would pass while the real manager errored on every call, which is the exact
 ## shape of a bridge that is only ever tested against its own mock.

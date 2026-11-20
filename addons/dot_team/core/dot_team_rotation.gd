@@ -147,7 +147,7 @@ static func forget(history: Dictionary, key: StringName) -> void:
 	history.erase(key)
 
 
-## A seeded order for one key: dot-core's [DotRandomStream], a child stream named by the
+## A seeded order for one key: GameSpice Core's [DotRandomStream], a child stream named by the
 ## key, drawn at index 0.
 ##
 ## [b]Not a hash of the key, twice over.[/b] Godot's string hash moves by one when the last

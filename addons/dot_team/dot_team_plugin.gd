@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-## Editor entry point for dot-team. Registers inspector types only.
+## Editor entry point for GameSpice Team. Registers inspector types only.
 
 const _ICON := "res://addons/dot_team/icon_placeholder.svg"
 

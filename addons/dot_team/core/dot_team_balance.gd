@@ -11,7 +11,7 @@ extends RefCounted
 
 ## The side with the fewest members. Ties broken by the order in [param order].
 ##
-## Deterministic ties matter here for the same reason they matter in dot-spawn: a client
+## Deterministic ties matter here for the same reason they matter in GameSpice Spawn: a client
 ## previewing which side it will land on and a server deciding must agree, or the
 ## preview is a lie.
 static func smallest(counts: Dictionary, order: Array[StringName]) -> StringName:

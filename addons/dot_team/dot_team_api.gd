@@ -1,6 +1,6 @@
 extends RefCounted
 
-## dot-team's API level. The rule for bumping it is on [DotAddonApi].
+## GameSpice Team's API level. The rule for bumping it is on [DotAddonApi].
 ##
 ## LEVEL rises for anything new a game could call; OLDEST rises to LEVEL when a callable
 ## is removed or changes meaning.

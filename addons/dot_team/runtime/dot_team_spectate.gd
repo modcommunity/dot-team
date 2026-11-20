@@ -1,11 +1,11 @@
 class_name DotTeamSpectate
 extends Node
 
-## Spectating, with sides. The bridge between dot-team and dot-spectate.
+## Spectating, with sides. The bridge between GameSpice Team and GameSpice Spectate.
 ##
 ## [b]It exists because the two addons describe a side differently, on purpose.[/b]
-## dot-spectate's [code]team_fn[/code] answers an integer and zero means "none", which
-## is the right shape for an addon that must work with no team system at all; dot-team's
+## GameSpice Spectate's [code]team_fn[/code] answers an integer and zero means "none", which
+## is the right shape for an addon that must work with no team system at all; GameSpice Team's
 ## sides are named, ordered and carry attributes. Something has to compile one into the
 ## other, and doing it in each game is doing it four times with a different off-by-one
 ## in one of them.
@@ -43,7 +43,7 @@ signal side_changed(key: String, to: StringName)
 
 @export var rules: DotTeamSpectateRules = null
 
-## dot-spectate's own rules object, if the game has one to hand over.
+## GameSpice Spectate's own rules object, if the game has one to hand over.
 ##
 ## Untyped for the reason in the class documentation. Left null, one is built alongside
 ## the manager with the family's defaults.
@@ -56,7 +56,7 @@ var teams: DotTeamRoster = null
 
 ## The camera and policy half: a `DotSpectatorManager`, or anything the same shape.
 ##
-## Built by [method setup] when dot-spectate is installed and nothing was assigned.
+## Built by [method setup] when GameSpice Spectate is installed and nothing was assigned.
 var spectators: Node = null
 
 ## `func(key: String) -> bool`. Whether somebody is in the world.
@@ -132,7 +132,7 @@ func setup() -> DotResult:
 	# The ordering that matters: the playing ids are cached here, once, and
 	# team_index() reads the cache. Recomputing per call would be a linear search per
 	# viewer per tick, and re-reading the set every call would let a mid-round change
-	# renumber the sides underneath dot-spectate — which would silently invert who may
+	# renumber the sides underneath GameSpice Spectate — which would silently invert who may
 	# watch whom.
 	_playing_ids = teams.teams.playing_ids()
 
@@ -148,13 +148,13 @@ func setup() -> DotResult:
 
 ## Builds a `DotSpectatorManager` without naming it.
 ##
-## [b]The same trick dot-core's [code]DotTransportENet[/code] uses, for a related
+## [b]The same trick GameSpice Core's [code]DotTransportENet[/code] uses, for a related
 ## reason.[/b] That one reaches ENet through [method ClassDB.instantiate] because a
 ## script that merely MENTIONS [code]ENetMultiplayerPeer[/code] fails to compile on a
 ## web export where the class is absent. This one reaches a script class the same way,
-## through the global class list, because dot-team must install with dot-core alone.
+## through the global class list, because GameSpice Team must install with GameSpice Core alone.
 ##
-## Returns null when dot-spectate is not installed, which is a supported configuration
+## Returns null when GameSpice Spectate is not installed, which is a supported configuration
 ## and not an error.
 func _make_spectator_manager() -> Node:
 	for entry: Variant in ProjectSettings.get_global_class_list():
@@ -176,18 +176,18 @@ func _make_spectator_manager() -> Node:
 
 # --- The bridge -------------------------------------------------------------
 
-## dot-spectate's integer for a named side. Zero for "no side".
+## GameSpice Spectate's integer for a named side. Zero for "no side".
 ##
 ## One-based over the [i]playing[/i] sides, so spectators and the unassigned holding pen
-## both come out as zero — which is exactly what dot-spectate's force-camera rule means
+## both come out as zero — which is exactly what GameSpice Spectate's force-camera rule means
 ## by "no team", and is why that rule then does the right thing without being told
-## anything about dot-team.
+## anything about GameSpice Team.
 func team_index(team_id: StringName) -> int:
 	var index := _playing_ids.find(team_id)
 	return index + 1 if index >= 0 else 0
 
 
-## The named side for one of dot-spectate's integers.
+## The named side for one of GameSpice Spectate's integers.
 func team_of_index(index: int) -> StringName:
 	if index <= 0 or index > _playing_ids.size():
 		return &""
@@ -211,7 +211,7 @@ func target_of(key: String) -> String:
 	return str((v as Object).get("target")) if v is Object else ""
 
 
-## Which camera mode they are in. See dot-spectate's `DotSpectatorView.Mode`.
+## Which camera mode they are in. See GameSpice Spectate's `DotSpectatorView.Mode`.
 func mode_of(key: String) -> int:
 	if spectators == null:
 		return 0
@@ -442,7 +442,7 @@ func describe() -> String:
 	return "DotTeamSpectate(%d viewers)" % viewers().size()
 
 
-# --- The callables dot-spectate is given ------------------------------------
+# --- The callables GameSpice Spectate is given ------------------------------------
 
 func _participants() -> PackedStringArray:
 	if teams == null:
@@ -474,9 +474,9 @@ func _pose(key: String) -> Transform3D:
 	return t as Transform3D if t is Transform3D else Transform3D.IDENTITY
 
 
-## The side policy, handed to dot-spectate as its extra filter.
+## The side policy, handed to GameSpice Spectate as its extra filter.
 ##
-## [b]An extra filter and not a replacement.[/b] dot-spectate applies its own
+## [b]An extra filter and not a replacement.[/b] GameSpice Spectate applies its own
 ## force-camera rule first and this runs afterwards, so a server that has set
 ## [code]mp_forcecamera 2[/code] still forbids everything regardless of what is written
 ## here — which is the correct precedence: the operator's setting is not something an
@@ -505,7 +505,7 @@ func _may_watch(viewer: String, target: String) -> bool:
 		return rules.unassigned_may_watch
 
 	if _alive(viewer):
-		# A living player watching anybody is a replay or a demo, and dot-spectate's
+		# A living player watching anybody is a replay or a demo, and GameSpice Spectate's
 		# own allow_while_alive already decided whether that is permitted at all.
 		return true
 

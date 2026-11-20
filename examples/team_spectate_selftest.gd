@@ -2,8 +2,8 @@ extends Node
 
 ## Exercises dot-team against a real team roster and a real spectator manager.
 ##
-## The bridge is the part worth checking hardest: dot-spectate numbers its sides and
-## dot-team names them, and an off-by-one in the mapping silently inverts who may watch
+## The bridge is the part worth checking hardest: GameSpice Spectate numbers its sides and
+## GameSpice Team names them, and an off-by-one in the mapping silently inverts who may watch
 ## whom — which is a competitive-integrity bug that nothing would report as one.
 ##
 ## [codeblock]
@@ -81,7 +81,7 @@ func _spectate(
 	# Free camera and no delay: this suite is about who may watch whom, and a
 	# broadcast delay would put every camera check a hundred ticks in the past.
 	#
-	# dot-spectate is linked into THIS project so the suite runs against the real
+	# GameSpice Spectate is linked into THIS project so the suite runs against the real
 	# manager rather than a stand-in — the addon itself never names it, which is the
 	# thing the "no manager at all" section below checks.
 	var sr := DotSpectatorRules.new()
@@ -443,8 +443,8 @@ func _test_api() -> void:
 
 ## Anything with the right methods is a spectator manager, including this.
 ##
-## dot-team names no `DotSpectator*` identifier anywhere, so a game with its own camera
-## system — or with dot-spectate absent entirely — still gets the side policy. This is
+## GameSpice Team names no `DotSpectator*` identifier anywhere, so a game with its own camera
+## system — or with GameSpice Spectate absent entirely — still gets the side policy. This is
 ## that promise, tested rather than asserted in a comment.
 class StubManager extends Node:
 	var participants_fn: Callable = Callable()
@@ -537,7 +537,7 @@ func _test_duck_typing() -> void:
 	s.end("blue1")
 	_check(not s.is_spectating("blue1"), "and stopping stops")
 
-	# No manager at all, which is what a lobby with no dot-spectate looks like.
+	# No manager at all, which is what a lobby with no GameSpice Spectate looks like.
 	var bare := DotTeamSpectate.new()
 	bare.teams = teams
 	bare.register_service = false

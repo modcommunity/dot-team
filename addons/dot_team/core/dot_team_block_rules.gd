@@ -148,7 +148,7 @@ func cvar_specs() -> Array[Dictionary]:
 
 
 ## Registers the cvars (see `DotPlayerBodyRules.bind_cvars` for [param add]) and
-## [constant CVAR_STATE]. Pass dot-server's FLAG_REPLICATED: a client predicts against them.
+## [constant CVAR_STATE]. Pass GameSpice Server's FLAG_REPLICATED: a client predicts against them.
 ## [param state_flags] for the state is the replicated flag with hidden and not archived.
 func bind_cvars(add: Callable, flags: int = 0, state_flags: int = 0) -> Array:
 	var made: Array = []

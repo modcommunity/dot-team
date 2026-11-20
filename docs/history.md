@@ -4,7 +4,7 @@ Decisions and bugs worth keeping. The rules they left are in [design.md](design.
 
 ## dot-team-spectate was absorbed
 
-`DotTeamSpectate` and `DotTeamSpectateRules` were their own addon, never pushed, and are now two files here. It cost nothing: dot-team still installs with dot-core alone, because the spectator manager is duck-typed. `team_spectate_selftest` runs against the real dot-spectate (linked for the test) and has a section against a stub of the same shape, so the duck typing is tested rather than asserted in a comment.
+`DotTeamSpectate` and `DotTeamSpectateRules` were their own addon, never pushed, and are now two files here. It cost nothing: GameSpice Team still installs with GameSpice Core alone, because the spectator manager is duck-typed. `team_spectate_selftest` runs against the real GameSpice Spectate (linked for the test) and has a section against a stub of the same shape, so the duck typing is tested rather than asserted in a comment.
 
 ## The random draw was alphabetical
 

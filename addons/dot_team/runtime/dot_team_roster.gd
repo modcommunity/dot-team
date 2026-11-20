@@ -3,13 +3,13 @@ extends Node
 
 ## Who is on which side, authoritatively on one machine and mirrored on the rest.
 ##
-## [b]Sides that outlive the match.[/b] dot-match's own team manager is scoped to a
+## [b]Sides that outlive the match.[/b] GameSpice Match's own team manager is scoped to a
 ## match and resets with it, which is correct for a deathmatch and wrong for a server
 ## where somebody joins blue, plays four maps and expects to still be blue. This holds
-## the assignment for the session, enforces the policy, and can [i]drive[/i] dot-match's
+## the assignment for the session, enforces the policy, and can [i]drive[/i] GameSpice Match's
 ## manager rather than competing with it — see [method bind_match].
 ##
-## It works with or without dot-player. Given a roster, it reads join ticks, scores and
+## It works with or without GameSpice Player. Given a roster, it reads join ticks, scores and
 ## liveness from the records; given nothing, a game supplies them through the callables
 ## and everything else is the same.
 
@@ -56,7 +56,7 @@ var live_fn: Callable = Callable()
 
 ## `func() -> int`. The current tick, for a bound match manager that wants one.
 ##
-## dot-match records a join tick when it assigns somebody. Zero is survivable — it
+## GameSpice Match records a join tick when it assigns somebody. Zero is survivable — it
 ## means "joined at the start" — but an idle-kick or a session-length statistic reading
 ## it would then be wrong for everybody, so a game that has a tick should supply it.
 var match_tick_fn: Callable = Callable()
@@ -208,7 +208,7 @@ func is_balanced() -> bool:
 
 ## Whether two players are on opposing playing sides.
 ##
-## The question dot-combat, dot-chat and dot-spectate all ask, answered once here so
+## The question GameSpice Combat, GameSpice Chat and GameSpice Spectate all ask, answered once here so
 ## that three addons do not each write "is their team not my team" — which is the
 ## spelling that makes a spectator everybody's enemy.
 func are_enemies(a: String, b: String) -> bool:
@@ -419,16 +419,16 @@ func _counts_without(key: String) -> Dictionary:
 	return c
 
 
-# --- dot-match ---------------------------------------------------------------
+# --- GameSpice Match ---------------------------------------------------------------
 
-## Binds a dot-match team manager so assignments made here reach it.
+## Binds a GameSpice Match team manager so assignments made here reach it.
 ##
-## [b]Duck-typed on purpose.[/b] dot-team must not depend on dot-match — a lobby, a
+## [b]Duck-typed on purpose.[/b] GameSpice Team must not depend on GameSpice Match — a lobby, a
 ## timer server and a sandbox all want sides and none of them wants a match loop — and
-## dot-match must keep working with nobody driving it. So this takes an [Object], calls
+## GameSpice Match must keep working with nobody driving it. So this takes an [Object], calls
 ## [code]assign[/code] on it if it has one, and does nothing at all otherwise.
 ##
-## The direction matters: this is the authority and dot-match is told. Two systems both
+## The direction matters: this is the authority and GameSpice Match is told. Two systems both
 ## deciding which side somebody is on is the bug this addon was written to remove.
 func bind_match(manager: Object) -> DotResult:
 	if manager == null:
@@ -453,12 +453,12 @@ func bind_match(manager: Object) -> DotResult:
 
 ## Tells a bound match manager which side somebody is on.
 ##
-## [b]Translating the id is the whole job, and it is not a cast.[/b] dot-team names its
-## sides; dot-match numbers its own with ids a game chose — `standard_pair()` there is
+## [b]Translating the id is the whole job, and it is not a cast.[/b] GameSpice Team names its
+## sides; GameSpice Match numbers its own with ids a game chose — `standard_pair()` there is
 ## `1` and `2`, and a spectator team is `31`. So the mapping is by POSITION: the nth
-## playing side here is the nth entry in the manager's own team list. Passing dot-team's
+## playing side here is the nth entry in the manager's own team list. Passing GameSpice Team's
 ## index straight through would assign everybody to team 0 and 1, of which only one
-## exists, and the symptom is half the server on a side dot-match refuses to spawn.
+## exists, and the symptom is half the server on a side GameSpice Match refuses to spawn.
 func _push_to_match(key: String, team_id: StringName) -> void:
 	if _match == null or not is_instance_valid(_match):
 		return

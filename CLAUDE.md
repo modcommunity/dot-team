@@ -1,16 +1,16 @@
-# dot-team
+# GameSpice Team
 
-Sides that outlive the match: team definitions and presets, a session-long roster that drives dot-match's, pure balance arithmetic, role rotation for asymmetric games, and team-aware spectating through dot-spectate.
+Sides that outlive the match: team definitions and presets, a session-long roster that drives GameSpice Match's, pure balance arithmetic, role rotation for asymmetric games, and team-aware spectating through GameSpice Spectate.
 
 Read the family [CLAUDE.md](../../CLAUDE.md) first; this file is only what is specific to teams.
 
-**The distributable is `addons/dot_team/`.** It requires [dot-core](../dot-core) and nothing else. dot-match, dot-spectate and dot-player are optional and duck-typed; dot-spectate is linked only for the spectate suite (`addons/dot_spectate`, gitignored).
+**The distributable is `addons/dot_team/`.** It requires [GameSpice Core](../dot-core) and nothing else. dot-match, dot-spectate and dot-player are optional and duck-typed; dot-spectate is linked only for the spectate suite (`addons/dot_spectate`, gitignored).
 
 ## Read before
 
 | Read | Before |
 | --- | --- |
-| [docs/design.md](docs/design.md) | anything: why balance is pure, session scope, the four-entry set, `are_enemies`, attributes, `validate()`, the dot-match and dot-spectate bridges, rotation, what this does not do |
+| [docs/design.md](docs/design.md) | anything: why balance is pure, session scope, the four-entry set, `are_enemies`, attributes, `validate()`, the GameSpice Match and GameSpice Spectate bridges, rotation, what this does not do |
 | [docs/history.md](docs/history.md) | the absorbed dot-team-spectate, the alphabetical draw |
 
 ## Layout
@@ -24,11 +24,11 @@ Read the family [CLAUDE.md](../../CLAUDE.md) first; this file is only what is sp
 | `core/dot_team_rotation.gd` | `DotTeamRotation`: who takes a role this round (`RANDOM`, `QUEUE`, `SWAP`), and why |
 | `core/dot_team_spectate_rules.gd` | `DotTeamSpectateRules`: who may watch whom |
 | `runtime/dot_team_roster.gd` | `DotTeamRoster`: who is on which side, authoritative or mirrored; `bind_match`, `live_fn` |
-| `runtime/dot_team_spectate.gd` | `DotTeamSpectate`: the duck-typed bridge to dot-spectate |
+| `runtime/dot_team_spectate.gd` | `DotTeamSpectate`: the duck-typed bridge to GameSpice Spectate |
 | `core/dot_team_block_rules.gd`, `core/dot_team_block_config.gd` | `DotTeamBlockRules`: whether two players stop at each other, by relation (`mp_teamblock` 0, `mp_enemyblock` 1), per-player or per-team `!block`/`!noblock` requests, replicated as `mp_blockstate`; `DotTeamBlockConfig` is its layered config |
 | `runtime/dot_team_block_commands.gd` | `DotTeamBlockCommands`: `!block` / `!noblock` on a duck-typed host (DotModule or DotConsole), chat-enabled, gated by `mp_blockcmd` |
 | `runtime/dot_team_menu_server.gd` | `DotTeamMenuServer`: the server half of the team menu (period key). Answers the `teams` command with a `team_menu` notice and validates `teams <id\|auto\|spectate\|play>` against `mp_teamswitch_enabled`, `_cooldown`, `_imbalance`, `_maxplayers`, `_anytime`, `_kill`, `_spectate`. The game supplies `teams_fn`, `state_fn`, `join_fn`, `spectate_fn`, `play_fn`, `window_fn`; it never knows how the game keeps teams |
-| `dot_team_api.gd` | the API level; bump `LEVEL` for anything new a game can call (rule on dot-core's `DotAddonApi`) |
+| `dot_team_api.gd` | the API level; bump `LEVEL` for anything new a game can call (rule on GameSpice Core's `DotAddonApi`) |
 | `examples/team_selftest.tscn`, `team_spectate_selftest.tscn` | the two suites |
 
 Paths except `examples/` are in `addons/dot_team/`.
@@ -41,13 +41,13 @@ The family's two steps ([family CLAUDE.md](../../CLAUDE.md#validating-anything))
 
 - Balance takes counts, not a roster, and stays static and pure. [design](docs/design.md#autobalance-is-only-defensible-if-the-server-can-say-why)
 - The roster drives dot-match's team manager, one way; never let both decide. [design](docs/design.md#the-dot-match-bridge-is-duck-typed-and-one-directional)
-- Push to dot-match by its team **id** at the playing position, never dot-team's index; never push a non-playing side. [design](docs/design.md#the-dot-match-bridge-is-duck-typed-and-one-directional)
+- Push to GameSpice Match by its team **id** at the playing position, never GameSpice Team's index; never push a non-playing side. [design](docs/design.md#the-dot-match-bridge-is-duck-typed-and-one-directional)
 - Every set has an unassigned and a spectator entry; check `playing` before treating a side as a team. Free-for-all is one playing team with friendly fire on. [design](docs/design.md#four-entries-in-a-two-sided-set)
 - Ask `are_enemies` here; never write "their team is not mine" elsewhere. [design](docs/design.md#are_enemies-is-written-once)
 - Add an `attributes` key, not a field, for another addon's need. [design](docs/design.md#attributes-is-open-on-purpose)
 - `validate()` refuses `max_difference = 0` and no-choice-no-auto-assign; keep both. [design](docs/design.md#validate-refuses-two-configurations-and-both-have-a-symptom)
-- Never write a `DotSpectator*` or dot-match identifier in a statement; find classes by `get_global_class_list()` and call by name. [design](docs/design.md#the-spectate-bridge-an-index-not-a-cast)
-- `team_index` is one-based over playing ids, cached at `setup()`; the filter runs after dot-spectate's own rules. [design](docs/design.md#the-spectate-bridge-an-index-not-a-cast)
+- Never write a `DotSpectator*` or GameSpice Match identifier in a statement; find classes by `get_global_class_list()` and call by name. [design](docs/design.md#the-spectate-bridge-an-index-not-a-cast)
+- `team_index` is one-based over playing ids, cached at `setup()`; the filter runs after GameSpice Spectate's own rules. [design](docs/design.md#the-spectate-bridge-an-index-not-a-cast)
 - A random draw is mixed, never a raw string hash. [design](docs/design.md#who-takes-a-role-dotteamrotation)
 
 Not here: scoring, spawning, damage, drawing, rounds (`live_fn`), player records. [design](docs/design.md#what-this-does-not-do)

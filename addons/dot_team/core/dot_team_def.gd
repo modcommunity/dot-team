@@ -4,15 +4,15 @@ extends Resource
 
 ## One side, and everything any other addon needs to know about it.
 ##
-## [b]Not called [code]DotTeam[/code].[/b] dot-match already has a class by that name —
+## [b]Not called [code]DotTeam[/code].[/b] GameSpice Match already has a class by that name —
 ## its own, smaller, match-scoped notion of a side — and [code]class_name[/code] is
 ## global in Godot, so the two would collide in any project that installed both. The
 ## name is the price of the two addons being independently installable, which they are
-## on purpose: a deathmatch needs dot-match's and nothing else.
+## on purpose: a deathmatch needs GameSpice Match's and nothing else.
 ##
 ## A definition is [i]data every consumer reads[/i], which is why the attribute list is
-## open-ended: dot-chat wants a colour, dot-objective wants to know which side attacks,
-## dot-spawn wants a site group, and none of them should need a change here to get it.
+## open-ended: GameSpice Chat wants a colour, GameSpice Objective wants to know which side attacks,
+## GameSpice Spawn wants a site group, and none of them should need a change here to get it.
 
 ## The name everything else uses. [code]&"blue"[/code], [code]&"ct"[/code].
 @export var id: StringName = &""
@@ -39,13 +39,13 @@ extends Resource
 ## spectators are still alive.
 @export var playing: bool = true
 
-## Whether members can hurt each other. Read by dot-combat through the game.
+## Whether members can hurt each other. Read by GameSpice Combat through the game.
 @export var friendly_fire: bool = false
 
 ## How many may be on this side. Zero is unlimited.
 @export_range(0, 1024, 1, "or_greater") var max_players: int = 0
 
-## Sites on this side, for dot-spawn. Empty means the side's own id is used.
+## Sites on this side, for GameSpice Spawn. Empty means the side's own id is used.
 @export var spawn_group: StringName = &""
 
 @export_group("Scoring")
@@ -84,7 +84,7 @@ static func make(
 	return t
 
 
-## The spawn group dot-spawn should ask for.
+## The spawn group GameSpice Spawn should ask for.
 func spawn_id() -> StringName:
 	return spawn_group if spawn_group != &"" else id
 
